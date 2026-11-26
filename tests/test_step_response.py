@@ -33,6 +33,7 @@ def fopdt_series(K=0.5, tau=100.0, theta=15.0, du=30.0, T0=22.0, base=30.0, tota
     return t, temp, duty
 
 
+@pytest.mark.req("REQ-15")
 def test_load_and_find_step(tmp_path):
     t, temp, duty = fopdt_series()
     f = tmp_path / "ol.csv"
@@ -44,6 +45,7 @@ def test_load_and_find_step(tmp_path):
     assert sr.find_step(run, step_time=100.0) == int(np.searchsorted(run.t, 100.0))
 
 
+@pytest.mark.req("REQ-16")
 def test_load_rejects_wrong_columns(tmp_path):
     f = tmp_path / "bad.csv"
     f.write_text("a,b\n1,2\n")
@@ -51,6 +53,7 @@ def test_load_rejects_wrong_columns(tmp_path):
         sr.load_run(f)
 
 
+@pytest.mark.req("REQ-15")
 def test_fopdt_fit_recovers_known_model(tmp_path):
     t, temp, duty = fopdt_series(K=0.5, tau=100.0, theta=15.0, du=30.0)
     f = tmp_path / "ol.csv"
@@ -62,6 +65,7 @@ def test_fopdt_fit_recovers_known_model(tmp_path):
     assert fit.dead_time_s == pytest.approx(15.0, abs=1.5)
 
 
+@pytest.mark.req("REQ-16")
 def test_fopdt_fit_flags_unsettled_run(tmp_path):
     t, temp, duty = fopdt_series(tau=300.0, total=400.0)
     f = tmp_path / "short.csv"
@@ -70,6 +74,7 @@ def test_fopdt_fit_flags_unsettled_run(tmp_path):
     assert not fit.settled
 
 
+@pytest.mark.req("REQ-15")
 def test_simc_pi():
     fit = sr.FopdtFit(0.5, 100.0, 10.0, 22.0, 37.0, 30.0, 0.0, True)
     kp, ki, tau_c = sr.simc_pi(fit)
@@ -89,6 +94,7 @@ def second_order_series(zeta=0.4, wn=0.03, T0=22.0, sp=50.0, base=30.0, total=12
     return t, temp, duty
 
 
+@pytest.mark.req("REQ-15")
 def test_closed_loop_metrics_match_theory(tmp_path):
     zeta, wn = 0.4, 0.03
     t, temp, duty = second_order_series(zeta, wn)
@@ -107,6 +113,7 @@ def test_closed_loop_metrics_match_theory(tmp_path):
     assert m.rise_time_s is not None and m.rise_time_s > 0
 
 
+@pytest.mark.req("REQ-16")
 def test_not_settled_is_reported(tmp_path):
     t = np.arange(0, 300, 0.25)
     temp = 22 + 0.05 * t  # still climbing, never reaches the band around 50
@@ -119,6 +126,7 @@ def test_not_settled_is_reported(tmp_path):
     assert "not settled" in sr.report_closed(m, "ramp")
 
 
+@pytest.mark.req("REQ-16")
 def test_setpoint_below_start_is_an_error(tmp_path):
     t, temp, duty = second_order_series()
     f = tmp_path / "x.csv"
@@ -127,6 +135,7 @@ def test_setpoint_below_start_is_an_error(tmp_path):
         sr.step_metrics(sr.load_run(f), setpoint=10.0)
 
 
+@pytest.mark.req("REQ-17")
 def test_cli_runs_and_saves_plot(tmp_path):
     t, temp, duty = second_order_series()
     f = tmp_path / "pid.csv"

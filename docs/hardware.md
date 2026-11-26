@@ -68,7 +68,7 @@ No flyback diode is needed: the heater is a resistive load. If you swap in a fan
 2. **Fuse** in the +12 V line.
 3. **Bimetal thermal switch** in series with the heater: an independent hardware cutoff.
 4. **Gate pull-down:** the heater is off while the MCU is in reset or unprogrammed.
-5. **Firmware cutoffs** (latched, only a reset clears them): over-temperature at 80 °C, sensor fault (3 bad reads), thermal runaway (heater above 90 % duty for 90 s without a 2 °C rise, meaning the thermocouple has come off), and maximum run time.
+5. **Firmware cutoffs** (latched, only a reset clears them): over-temperature at 80 °C, sensor fault (3 bad reads), thermal runaway (heater at 90 % duty or more for 90 s without a 2 °C rise, meaning the thermocouple has come off), and maximum run time.
 6. **Independent watchdog (IWDG):** if the control loop hangs, the MCU resets and the heater goes off.
 7. **Mechanics:** everything bolted down, the heater plate on stand-offs away from the base, nothing flammable nearby.
 8. **Never left running unattended.** Unplug the 12 V supply after each test session.
