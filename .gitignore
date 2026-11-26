@@ -4,3 +4,5 @@ __pycache__/
 *.pyc
 .venv/
 tests/c/test_control
+c_results.txt
+pytest_results.xml

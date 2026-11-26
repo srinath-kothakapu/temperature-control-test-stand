@@ -9,15 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Firmware library unit tests (gcc on host)
-        run: make -C tests/c
+      - name: Firmware library tests (gcc on host)
+        run: |
+          make -C tests/c
+          ./tests/c/test_control > c_results.txt
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Analysis tests
         run: |
           python -m pip install -r requirements.txt
-          python -m pytest -q tests
+          python -m pytest -q tests --junitxml=pytest_results.xml
+      - name: Traceability matrix (fails on a failed test, an untested requirement or a stale docs/traceability.md)
+        run: python tools/trace.py --c-results c_results.txt --junit pytest_results.xml --check
 
   firmware-build:
     runs-on: ubuntu-latest
